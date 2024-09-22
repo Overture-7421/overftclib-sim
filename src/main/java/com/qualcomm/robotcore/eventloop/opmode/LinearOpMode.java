@@ -14,7 +14,7 @@ abstract public class LinearOpMode {
     private volatile boolean isStarted = false;
     volatile boolean stopRequested = false;
     private final Object runningNotifier = new Object();
-    abstract public void runOpMode() throws InterruptedException;
+    abstract public void runOpMode();
     /**
      * Pauses until the play button has been pressed (or until the current thread
      * gets interrupted, which typically indicates that the OpMode has been stopped).

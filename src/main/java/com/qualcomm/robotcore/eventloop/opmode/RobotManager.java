@@ -60,9 +60,7 @@ public class RobotManager {
 
         try {
             opMode.runOpMode();
-        }catch (InterruptedException e){
-            e.printStackTrace();
-        }finally {
+        } finally {
             state = RunState.Idle;
         }
     }
