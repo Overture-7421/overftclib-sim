@@ -27,10 +27,6 @@ public class Main_OverFTCLibSIM extends Application{
     ArrayList<OpModeManager.OpModeEntry> opModes = new ArrayList<>();
     int selectedModeIndex = 0;
     int selectedOpModeIndex = 0;
-
-    String[] robotStateModes = {"Initialize", "Start"};
-    int selectedRobotStateIndex = 0;
-
     ImString robotNameString = new ImString();
     Class<? extends LinearOpMode> selectedOpMode = null;
 
@@ -57,7 +53,7 @@ public class Main_OverFTCLibSIM extends Application{
             ImGui.endListBox();
         }
 
-        ImGui.text("Select Op Mode");
+        ImGui.text("Select OpMode");
         if(ImGui.beginListBox("Listbox2", new ImVec2(-Float.MIN_VALUE, 5 * ImGui.getTextLineHeightWithSpacing()))){
             opModes = selectedModeIndex == 0 ? opModeManager.GetTeleopOpModes() : opModeManager.GetAutoOpModes();
 
@@ -87,7 +83,7 @@ public class Main_OverFTCLibSIM extends Application{
         ImGui.inputText("Name", robotNameString);
 
         if(selectedOpMode == null) {
-            ImGui.text("Select an Op Mode first...");
+            ImGui.text("Select an OpMode first...");
             ImGui.end();
             return;
         }
@@ -130,7 +126,7 @@ public class Main_OverFTCLibSIM extends Application{
     @Override
     public void process() {
         SimGamepadManager.PollControllers();
-        SimMotorManager.UpdateSimMotors(); //Move to a thread not related to UI
+        SimMotorManager.UpdateSimMotors(); //TODO: Move to a thread not related to UI
         opModeWindow();
         robotControlWindow();
     }
