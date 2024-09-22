@@ -62,7 +62,7 @@ public class OverDcMotor implements IOverDcMotor {
     }
 
     @Override
-    public void setZeroPowerBehavior(zeroPowerBehavior zeroPowerBehavior) {
+    public void setZeroPowerBehavior(ZeroPowerBehavior zeroPowerBehavior) {
 
     }
 
