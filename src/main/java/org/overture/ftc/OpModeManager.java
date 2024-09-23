@@ -28,7 +28,6 @@ public class OpModeManager {
         Set<Class<?>> autoOpAnnotatedTypes = new Reflections(PackageToScan).getTypesAnnotatedWith(Autonomous.class);
 
         for(Class<?> type : teleopOpAnnotatedTypes) {
-            System.out.println(type.getCanonicalName());
             if(type.getSuperclass() == LinearOpMode.class){
                 TeleOp annotation = type.getAnnotation(TeleOp.class);
                 teleopOpModes.add(new OpModeEntry(annotation.name(), annotation.group(), (Class<? extends LinearOpMode>) type));
@@ -36,10 +35,9 @@ public class OpModeManager {
         }
 
         for(Class<?> type : autoOpAnnotatedTypes) {
-            System.out.println(type.getCanonicalName());
             if(type.getSuperclass() == LinearOpMode.class){
                 Autonomous annotation = type.getAnnotation(Autonomous.class);
-                teleopOpModes.add(new OpModeEntry(annotation.name(), annotation.group(), (Class<? extends LinearOpMode>) type));
+                autoOpModes.add(new OpModeEntry(annotation.name(), annotation.group(), (Class<? extends LinearOpMode>) type));
             }
         }
     }

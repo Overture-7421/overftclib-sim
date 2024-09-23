@@ -2,6 +2,7 @@ package org.overture.ftc;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.RobotManager;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.SimGamepadManager;
 import edu.wpi.first.math.WPIMathJNI;
@@ -15,20 +16,25 @@ import imgui.app.Application;
 import imgui.app.Configuration;
 import imgui.type.ImString;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 import static org.lwjgl.glfw.GLFW.*;
 
 public class Main_OverFTCLibSIM extends Application{
     private final OpModeManager opModeManager = new OpModeManager();
     private final RobotManager robotManager = new RobotManager();
+    private final SimGamepadManager simGamepadManager = new SimGamepadManager();
     String[] modes = {"Teleop", "Auto"};
     ArrayList<OpModeManager.OpModeEntry> opModes = new ArrayList<>();
     int selectedModeIndex = 0;
     int selectedOpModeIndex = 0;
     ImString robotNameString = new ImString();
     Class<? extends LinearOpMode> selectedOpMode = null;
+    File settingsFile = new File("overftclib-sim.settings");
 
     public void opModeWindow(){
         ImGui.begin("OpMode");
@@ -45,6 +51,7 @@ public class Main_OverFTCLibSIM extends Application{
                 final boolean isSelected = selectedModeIndex == i;
                 if(ImGui.selectable(modes[i], isSelected)) {
                     selectedModeIndex = i;
+                    selectedOpMode = null;
                 }
                 if(isSelected) {
                     ImGui.setItemDefaultFocus();
@@ -80,7 +87,7 @@ public class Main_OverFTCLibSIM extends Application{
     public void robotControlWindow() {
         ImGui.begin("Driver Station");
         ImGui.text("Simulated Robot Name");
-        ImGui.inputText("Name", robotNameString);
+        ImGui.inputText("##label", robotNameString);
 
         if(selectedOpMode == null) {
             ImGui.text("Select an OpMode first...");
@@ -114,21 +121,87 @@ public class Main_OverFTCLibSIM extends Application{
         ImGui.end();
     }
 
+    public void gamepadWindow() {
+        ImGui.begin("Available Gamepads");
+        for(int i = 0; i < simGamepadManager.GetAllGamepads().size(); i++) {
+            SimGamepadManager.GamepadContainer container = simGamepadManager.GetAllGamepads().get(i);
+            ImGui.pushID(i);
+            ImGui.sameLine();
+            ImGui.button(container.Name);
+
+            if(ImGui.beginDragDropSource()) {
+                ImGui.setDragDropPayload( container);
+                ImGui.endDragDropSource();
+            }
+
+            ImGui.sameLine();
+            ImGui.radioButton("##label", container.Gamepad.a);
+
+            ImGui.popID();
+        }
+
+        ImGui.end();
+
+
+        ImGui.begin("Gamepads Used");
+
+        for(int i = 0; i < 2; i++) {
+            ImGui.pushID(i);
+            ImGui.sameLine();
+            ImGui.button(robotManager.GetGamepad(i).Name, new ImVec2(200,50));
+
+            if(ImGui.beginDragDropTarget()) {
+               if(ImGui.acceptDragDropPayload(SimGamepadManager.GamepadContainer.class) != null) {
+                   SimGamepadManager.GamepadContainer gamepad = ImGui.getDragDropPayload(SimGamepadManager.GamepadContainer.class);
+                   robotManager.SetGamepad(gamepad, i);
+                   ImGui.endDragDropTarget();
+               }
+            }
+            ImGui.popID();
+        }
+
+        ImGui.end();
+    }
+
     @Override
     public void preRun() {
-        SimGamepadManager.Initialize();
-        glfwSetJoystickCallback(SimGamepadManager::HandleJoystickConfigurationCallback);
+        simGamepadManager.Initialize();
+        glfwSetJoystickCallback(simGamepadManager::HandleJoystickConfigurationCallback);
+
+        try {
+
+            settingsFile.createNewFile();
+
+            Scanner scanner = new Scanner(settingsFile);
+
+            if(scanner.hasNextLine()) {
+                robotNameString.set(scanner.nextLine());
+            }
+            scanner.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
+    @Override
+    public void postRun() {
+        try (FileWriter settingsWriter = new FileWriter(settingsFile)) {
+            settingsWriter.write(robotNameString.get());
+        }catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
     @Override
     public void configure(final Configuration config) {
         config.setTitle("OverFTC Sim");
     }
     @Override
     public void process() {
-        SimGamepadManager.PollControllers();
-        SimMotorManager.UpdateSimMotors(); //TODO: Move to a thread not related to UI
+        simGamepadManager.PollControllers();
         opModeWindow();
         robotControlWindow();
+        gamepadWindow();
     }
     public static void main(String[] args) throws InterruptedException, IOException {
         NetworkTablesJNI.Helper.setExtractOnStaticLoad(false);

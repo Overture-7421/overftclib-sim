@@ -65,7 +65,6 @@ public class OverDcMotor implements IOverDcMotor {
     public void setZeroPowerBehavior(ZeroPowerBehavior zeroPowerBehavior) {
 
     }
-
     @Override
     public void setTargetPosition(int i) {
         positionController.setSetpoint((double) i / encoderPPR);
