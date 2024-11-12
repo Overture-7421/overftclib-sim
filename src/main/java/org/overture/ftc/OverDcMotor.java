@@ -2,7 +2,7 @@ package org.overture.ftc;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import edu.wpi.first.networktables.NetworkTableEntry;
-import org.overture.ftc.overftclib.IOverDcMotor;
+import com.overture.ftc.overftclib.Devices.IOverDcMotor;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.math.controller.PIDController;
 
