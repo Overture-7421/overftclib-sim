@@ -50,8 +50,10 @@ nativeConfig.dependencies.add wpilibTools.deps.wpilib("ntcore")
 nativeConfig.dependencies.add wpilibTools.deps.wpilib("wpilibNewCommands")
 
 dependencies {
-    api 'org.overture.ftc:overftclib:0.0.1'
+    api 'com.overture.ftc:overftclib:0.0.0'
 
+    implementation 'edu.wpi.first.ntcore:ntcore-java:2024.3.2'
+    implementation 'edu.wpi.first.wpimath:wpimath-java:2024.3.2'
     implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
 
     implementation "org.lwjgl:lwjgl"

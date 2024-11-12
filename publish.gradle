@@ -42,7 +42,7 @@ ext.addTaskToCopyAllOutputs = { task ->
     copyAllOutputs.from task.archiveFile
 }
 
-def artifactGroupId = 'org.overture.ftc'
+def artifactGroupId = 'com.overture.ftc'
 def baseArtifactId = 'overftclib-sim'
 def javaBaseName = "_GROUP_org_overture_ftc_ID_${baseArtifactId}_CLS"
 
